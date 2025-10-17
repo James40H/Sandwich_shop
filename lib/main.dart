@@ -6,6 +6,8 @@ void main() {
 
 class App extends StatelessWidget {
   const App({super.key});
+  
+  get backgroundcolour => null;
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +15,19 @@ class App extends StatelessWidget {
       title: 'Sandwich Shop App',
       home: Scaffold(
         appBar: AppBar(title: const Text('Sandwich Counter')),
-        body: const Center(
-          child: OrderItemDisplay(5, 'Footlong'),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[   
+              const OrderItemDisplay(5, 'Footlong'),
+              // Container(
+              //   margin: const EdgeInsets.all(10.0),
+              //   color: Colors.amber[600],
+              //   width: 48.0,
+              //   height: 48.0,
+              // ),
+            ],
+          ),
         ),
       ),
     );
@@ -30,6 +43,8 @@ class OrderItemDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text('$quantity $itemType sandwich(es): ${'🥪' * quantity}');
+    
+    
 }
 }
 class MyApp extends StatelessWidget {
@@ -82,7 +97,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -91,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
     });
   }
 
