@@ -6,6 +6,15 @@ void main() {
 
 class App extends StatelessWidget {
   const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Sandwich Shop App',
+      home: OrderScreen(maxQuantity: 5),
+    );
+  }
+}
   
   get backgroundcolour => null;
 
@@ -41,7 +50,7 @@ class App extends StatelessWidget {
       ),
     );
   }
-}
+
 
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
