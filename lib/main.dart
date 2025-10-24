@@ -35,12 +35,18 @@ class App extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () => print('Add button pressed!'),
-                    child: const Text('+ Add'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[600],
+                    ),
+                    child: const Text('Add'),
                   ),
+                  const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: () => print('Remove button pressed!'),
-                    color: Colors.blue[600],
-                    child: const Text('- Remove'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[600],
+                    ),
+                    child: const Text('Remove'),
                   ),
                 ],
               ),
@@ -66,6 +72,10 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
+  Set<String> _selectedSize = {'Footlong'};
+
+  String get selectedType => _selectedSize.isNotEmpty ? _selectedSize.first : 'Footlong';
+
   void _increaseQuantity() {
   if (_quantity < widget.maxQuantity) {
     setState(() => _quantity++);
@@ -87,20 +97,40 @@ void _decreaseQuantity() {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SegmentedButton<String>(
+              segments: const <ButtonSegment<String>>[
+                ButtonSegment(value: 'Footlong', label: Text('Footlong')),
+                ButtonSegment(value: 'Six-inch', label: Text('Six-inch')),
+              ],
+              selected: _selectedSize,
+              onSelectionChanged: (newSelection) {
+                setState(() {
+                  _selectedSize = newSelection;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
             OrderItemDisplay(
               _quantity,
-              'Footlong',
+              selectedType,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: _increaseQuantity,
-                  child: const Text('Add'),
+                   onPressed: _quantity < widget.maxQuantity ? _increaseQuantity : null,
+                  child: const Text('+ Add'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[600],
+                    ),
                 ),
+                //const SizedBox(width: 12),
                 ElevatedButton(
-                  onPressed: _decreaseQuantity,
-                  child: const Text('Remove'),
+                  onPressed: _quantity > 0 ? _decreaseQuantity : null,
+                  child: const Text('- Remove'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[600],
+                    ),
                 ),
               ],
             ),
