@@ -35,11 +35,12 @@ class App extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () => print('Add button pressed!'),
-                    child: const Text('Add'),
+                    child: const Text('+ Add'),
                   ),
                   ElevatedButton(
                     onPressed: () => print('Remove button pressed!'),
-                    child: const Text('Remove'),
+                    colour: backgroundcolour,
+                    child: const Text('- Remove'),
                   ),
                 ],
               ),
