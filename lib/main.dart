@@ -18,46 +18,7 @@ class App extends StatelessWidget {
   
   get backgroundcolour => null;
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sandwich Shop App',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Sandwich Counter')),
-        // The bit that you need to update starts from here
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const OrderItemDisplay(5, 'Footlong'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => print('Add button pressed!'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[600],
-                    ),
-                    child: const Text('Add'),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () => print('Remove button pressed!'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red[600],
-                    ),
-                    child: const Text('Remove'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        // The bit that you need to update ends here
-      ),
-    );
-  }
-
+  
 
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
@@ -70,23 +31,31 @@ class OrderScreen extends StatefulWidget {
   }
 }
 
+// ...existing code...
 class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
-  Set<String> _selectedSize = {'Footlong'};
+   Set<String> _selectedSize = {'Footlong'};
 
+  bool get _isFootlong => _selectedSize.contains('Footlong');
   String get selectedType => _selectedSize.isNotEmpty ? _selectedSize.first : 'Footlong';
 
-  void _increaseQuantity() {
-  if (_quantity < widget.maxQuantity) {
-    setState(() => _quantity++);
+  void _toggleSize(bool value) {
+    setState(() {
+      _selectedSize = value ? {'Footlong'} : {'Six-inch'};
+    });
   }
-}
 
-void _decreaseQuantity() {
-  if (_quantity > 0) {
-    setState(() => _quantity--);
+  void _increaseQuantity() {
+    if (_quantity < widget.maxQuantity) {
+      setState(() => _quantity++);
+    }
   }
-}
+
+  void _decreaseQuantity() {
+    if (_quantity > 0) {
+      setState(() => _quantity--);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,17 +66,12 @@ void _decreaseQuantity() {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SegmentedButton<String>(
-              segments: const <ButtonSegment<String>>[
-                ButtonSegment(value: 'Footlong', label: Text('Footlong')),
-                ButtonSegment(value: 'Six-inch', label: Text('Six-inch')),
-              ],
-              selected: _selectedSize,
-              onSelectionChanged: (newSelection) {
-                setState(() {
-                  _selectedSize = newSelection;
-                });
-              },
+            SwitchListTile.adaptive(
+              title: const Text('Sandwich size'),
+              subtitle: Text(_isFootlong ? 'Footlong' : 'Six-inch'),
+              //secondary: const Icon(Icons.lunch_dining),
+              value: _isFootlong,
+              onChanged: _toggleSize,
             ),
             const SizedBox(height: 16),
             OrderItemDisplay(
@@ -117,20 +81,16 @@ void _decreaseQuantity() {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                   onPressed: _quantity < widget.maxQuantity ? _increaseQuantity : null,
-                  child: const Text('+ Add'),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                    ),
+                StyledButton(
+                  label: '+ Add',
+                  onPressed: _quantity < widget.maxQuantity ? _increaseQuantity : null,
+                  backgroundColor: Colors.green[600],
                 ),
-                //const SizedBox(width: 12),
-                ElevatedButton(
+                const SizedBox(width: 12),
+                StyledButton(
+                  label: '- Remove',
                   onPressed: _quantity > 0 ? _decreaseQuantity : null,
-                  child: const Text('- Remove'),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red[600],
-                    ),
+                  backgroundColor: Colors.red[600],
                 ),
               ],
             ),
@@ -140,6 +100,56 @@ void _decreaseQuantity() {
     );
   }
 }
+
+class StyledButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final EdgeInsetsGeometry padding;
+  final Widget? icon;
+
+  const StyledButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.backgroundColor,
+    this.textColor,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool enabled = onPressed != null;
+    final Color bg = backgroundColor ??
+        (enabled ? Theme.of(context).colorScheme.primary : Colors.grey.shade400);
+    final Color fg = textColor ?? Colors.white;
+
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bg,
+        foregroundColor: fg,
+        padding: padding,
+        textStyle: const TextStyle(fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        minimumSize: const Size(64, 44),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            icon!,
+            const SizedBox(width: 8),
+          ],
+          Text(label),
+        ],
+      ),
+    );
+  }
+}
+// ...existing code...
 
 class OrderItemDisplay extends StatelessWidget {
   final String itemType;
