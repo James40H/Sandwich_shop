@@ -15,31 +15,30 @@ class App extends StatelessWidget {
       title: 'Sandwich Shop App',
       home: Scaffold(
         appBar: AppBar(title: const Text('Sandwich Counter')),
-          body: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                  //color: Colors.blue[600],
-                  width: 400.0,
-                  height: 300.0,
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly, // try center, start, end, spaceAround, etc.
-                    crossAxisAlignment: CrossAxisAlignment.center,   // try start, end, stretch
-                    children: const <Widget>[
-                      OrderItemDisplay(5, 'Footlong'),
-                      OrderItemDisplay(3, 'Six-inch'),
-                      OrderItemDisplay(2, 'Wrap'),
-                    ],
+        // The bit that you need to update starts from here
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const OrderItemDisplay(5, 'Footlong'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => print('Add button pressed!'),
+                    child: const Text('Add'),
                   ),
-                ),
-              ],
+                  ElevatedButton(
+                    onPressed: () => print('Remove button pressed!'),
+                    child: const Text('Remove'),
+                  ),
+                ],
+              ),
+            ],
           ),
-        )
-      )
+        ),
+        // The bit that you need to update ends here
+      ),
     );
   }
 }
