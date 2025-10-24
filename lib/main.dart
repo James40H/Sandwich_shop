@@ -78,6 +78,7 @@ class _OrderScreenState extends State<OrderScreen> {
               _quantity,
               selectedType,
             ),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
