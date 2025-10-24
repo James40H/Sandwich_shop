@@ -39,7 +39,7 @@ class App extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () => print('Remove button pressed!'),
-                    colour: backgroundcolour,
+                    color: Colors.blue[600],
                     child: const Text('- Remove'),
                   ),
                 ],
