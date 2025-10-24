@@ -22,7 +22,7 @@ class App extends StatelessWidget {
                 Container(
                   margin: const EdgeInsets.all(10.0),
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                  //color: Colors.blue[600],
+                  color: Colors.blue[600],
                   width: 400.0,
                   height: 300.0,
                   alignment: Alignment.center,
