@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
+import 'views/app_styles.dart';
+
+enum BreadType { white, wheat, wholemeal }
+
 void main() {
-   runApp(const App());
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
@@ -15,10 +20,6 @@ class App extends StatelessWidget {
     );
   }
 }
-  
-  get backgroundcolour => null;
-
-  
 
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
@@ -31,67 +32,143 @@ class OrderScreen extends StatefulWidget {
   }
 }
 
-// ...existing code...
 class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
-   Set<String> _selectedSize = {'Footlong'};
+  final TextEditingController _notesController = TextEditingController();
+  bool _isFootlong = true;
+  BreadType _selectedBreadType = BreadType.white;
 
-  bool get _isFootlong => _selectedSize.contains('Footlong');
-  String get selectedType => _selectedSize.isNotEmpty ? _selectedSize.first : 'Footlong';
-
-  void _toggleSize(bool value) {
-    setState(() {
-      _selectedSize = value ? {'Footlong'} : {'Six-inch'};
+  @override
+  void initState() {
+    super.initState();
+    _notesController.addListener(() {
+      setState(() {});
     });
   }
 
-  void _increaseQuantity() {
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  VoidCallback? _getIncreaseCallback() {
     if (_quantity < widget.maxQuantity) {
-      setState(() => _quantity++);
+      return () {
+        setState(() => _quantity++);
+      };
+    }
+    return null;
+  }
+
+  VoidCallback? _getDecreaseCallback() {
+    if (_quantity > 0) {
+      return () {
+        setState(() => _quantity--);
+      };
+    }
+    return null;
+  }
+
+  void _onSandwichTypeChanged(bool value) {
+    setState(() => _isFootlong = value);
+  }
+
+  void _onBreadTypeSelected(BreadType? value) {
+    if (value != null) {
+      setState(() => _selectedBreadType = value);
     }
   }
 
-  void _decreaseQuantity() {
-    if (_quantity > 0) {
-      setState(() => _quantity--);
+  List<DropdownMenuEntry<BreadType>> _buildDropdownEntries() {
+    List<DropdownMenuEntry<BreadType>> entries = [];
+    for (BreadType bread in BreadType.values) {
+      DropdownMenuEntry<BreadType> newEntry = DropdownMenuEntry<BreadType>(
+        value: bread,
+        label: bread.name,
+      );
+      entries.add(newEntry);
     }
+    return entries;
   }
+
   @override
   Widget build(BuildContext context) {
+    String sandwichType = 'footlong';
+    if (!_isFootlong) {
+      sandwichType = 'six-inch';
+    }
+
+    String noteForDisplay;
+    if (_notesController.text.isEmpty) {
+      noteForDisplay = 'No notes added.';
+    } else {
+      noteForDisplay = _notesController.text;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sandwich Counter'),
+        title: const Text(
+          'Sandwich Counter',
+          style: heading1,
+        ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SwitchListTile.adaptive(
-              title: const Text('Sandwich size'),
-              subtitle: Text(_isFootlong ? 'Footlong' : 'Six-inch'),
-              //secondary: const Icon(Icons.lunch_dining),
-              value: _isFootlong,
-              onChanged: _toggleSize,
-            ),
-            const SizedBox(height: 16),
             OrderItemDisplay(
-              _quantity,
-              selectedType,
+              quantity: _quantity,
+              itemType: sandwichType,
+              breadType: _selectedBreadType,
+              orderNote: noteForDisplay,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('six-inch', style: normalText),
+                Switch(
+                  value: _isFootlong,
+                  onChanged: _onSandwichTypeChanged,
+                ),
+                const Text('footlong', style: normalText),
+              ],
+            ),
+            const SizedBox(height: 10),
+            DropdownMenu<BreadType>(
+              textStyle: normalText,
+              initialSelection: _selectedBreadType,
+              onSelected: _onBreadTypeSelected,
+              dropdownMenuEntries: _buildDropdownEntries(),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(40.0),
+              child: TextField(
+                key: const Key('notes_textfield'),
+                controller: _notesController,
+                decoration: const InputDecoration(
+                  labelText: 'Add a note (e.g., no onions)',
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 StyledButton(
-                  label: '+ Add',
-                  onPressed: _quantity < widget.maxQuantity ? _increaseQuantity : null,
-                  backgroundColor: Colors.green[600],
+                  onPressed: _getIncreaseCallback(),
+                  icon: Icons.add,
+                  label: 'Add',
+                  backgroundColor: Colors.green,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 StyledButton(
-                  label: '- Remove',
-                  onPressed: _quantity > 0 ? _decreaseQuantity : null,
-                  backgroundColor: Colors.red[600],
+                  onPressed: _getDecreaseCallback(),
+                  icon: Icons.remove,
+                  label: 'Remove',
+                  backgroundColor: Colors.red,
                 ),
               ],
             ),
@@ -103,179 +180,72 @@ class _OrderScreenState extends State<OrderScreen> {
 }
 
 class StyledButton extends StatelessWidget {
-  final String label;
   final VoidCallback? onPressed;
-  final Color? backgroundColor;
-  final Color? textColor;
-  final EdgeInsetsGeometry padding;
-  final Widget? icon;
+  final IconData icon;
+  final String label;
+  final Color backgroundColor;
 
   const StyledButton({
     super.key,
+    required this.onPressed,
+    required this.icon,
     required this.label,
-    this.onPressed,
-    this.backgroundColor,
-    this.textColor,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    this.icon,
+    required this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bool enabled = onPressed != null;
-    final Color bg = backgroundColor ??
-        (enabled ? Theme.of(context).colorScheme.primary : Colors.grey.shade400);
-    final Color fg = textColor ?? Colors.white;
+    ButtonStyle myButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: backgroundColor,
+      foregroundColor: Colors.white,
+      textStyle: normalText,
+    );
 
     return ElevatedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: bg,
-        foregroundColor: fg,
-        padding: padding,
-        textStyle: const TextStyle(fontWeight: FontWeight.w600),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        minimumSize: const Size(64, 44),
-      ),
+      style: myButtonStyle,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            icon!,
-            const SizedBox(width: 8),
-          ],
+          Icon(icon),
+          const SizedBox(width: 8),
           Text(label),
         ],
       ),
     );
   }
 }
-// ...existing code...
 
 class OrderItemDisplay extends StatelessWidget {
-  final String itemType;
   final int quantity;
+  final String itemType;
+  final BreadType breadType;
+  final String orderNote;
 
-  const OrderItemDisplay(this.quantity, this.itemType, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text('$quantity $itemType sandwich(es): ${'🥪' * quantity}');
-    
-    
-}
-}
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sandwich Shop App',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-    });
-  }
+  const OrderItemDisplay({
+    super.key,
+    required this.quantity,
+    required this.itemType,
+    required this.breadType,
+    required this.orderNote,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Welcome to my sandwich shop!'),
-            //Text(
-            //  '$_counter',
-            //  style: Theme.of(context).textTheme.headlineMedium,
-            //),
-          ],
+    String displayText =
+        '$quantity ${breadType.name} $itemType sandwich(es): ${'🥪' * quantity}';
+
+    return Column(
+      children: [
+        Text(
+          displayText,
+          style: normalText,
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        const SizedBox(height: 8),
+        Text(
+          'Note: $orderNote',
+          style: normalText,
+        ),
+      ],
     );
   }
 }
