@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-import 'views/app_styles.dart';
 import 'package:sandwich_shop/views/app_styles.dart'; 
 import 'package:sandwich_shop/repositories/order_repository.dart';
 
