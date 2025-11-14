@@ -1,6 +1,8 @@
 Sandwich Shop App
 
-A small Flutter demo app for creating simple sandwich orders. Lets users choose sandwich size, bread type, quantity, and add order notes. Core UI and logic live in main.dart. Key widgets and classes include App, OrderScreen, OrderItemDisplay, StyledButton, and the BreadType enum. Order state is managed by OrderRepository. UI styles are in app_styles.dart.
+A small Flutter demo app for creating simple sandwich orders. Lets users choose sandwich size, bread type, quantity, and add order notes. Core UI and logic live in main.dart. 
+Key widgets and classes include App, OrderScreen, OrderItemDisplay, StyledButton, and the BreadType enum. Order state is managed by OrderRepository. 
+UI styles are in app_styles.dart.
 
 Features:
 Increment / decrement order quantity with guards on min/max implemented by OrderRepository.
