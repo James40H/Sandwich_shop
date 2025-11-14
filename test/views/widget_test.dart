@@ -173,11 +173,11 @@ void main() {
     // Initially should be footlong
     expect(find.textContaining('footlong sandwich'), findsOneWidget);
     // Toggle the switch to change to six-inch
-    await tester.tap(find.byType(Switch));
+    await tester.tap(find.byKey(const Key('size')));
     await tester.pumpAndSettle();
     expect(find.textContaining('six-inch sandwich'), findsOneWidget);
     // Toggle back to footlong
-    await tester.tap(find.byType(Switch));
+    await tester.tap(find.byKey(const Key('size')));
     await tester.pumpAndSettle();
     expect(find.textContaining('footlong sandwich'), findsOneWidget);
   });
