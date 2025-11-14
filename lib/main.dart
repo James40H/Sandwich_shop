@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:sandwich_shop/views/app_styles.dart'; 
 import 'package:sandwich_shop/repositories/order_repository.dart';
-import 'package:sandwich_shop/repositories/Pricing_repository.dart';
+import 'package:sandwich_shop/repositories/pricing_repository.dart';
 
 enum BreadType { white, wheat, wholemeal }
 
@@ -24,8 +24,9 @@ class App extends StatelessWidget {
 
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
+  final double basePrice;
 
-  const OrderScreen({super.key, this.maxQuantity = 10});
+  const OrderScreen({super.key, this.maxQuantity = 10, this.basePrice = 7.0});
 
   @override
   State<OrderScreen> createState() {
@@ -35,6 +36,7 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   late final OrderRepository _orderRepository;
+  late final PricingRepository _pricingRepository;
   final TextEditingController _notesController = TextEditingController();
   bool _isFootlong = true;
   BreadType _selectedBreadType = BreadType.white;
@@ -44,6 +46,7 @@ class _OrderScreenState extends State<OrderScreen> {
   void initState() {
     super.initState();
     _orderRepository = OrderRepository(maxQuantity: widget.maxQuantity);
+    _pricingRepository = PricingRepository();
     _notesController.addListener(() {
       setState(() {});
     });
@@ -105,6 +108,12 @@ class _OrderScreenState extends State<OrderScreen> {
       noteForDisplay = _notesController.text;
     }
 
+    final double pricePerItem = _pricingRepository.getSandwichPrice(
+      isFootlong: _isFootlong,
+      sandwichType: sandwichType,
+    );
+    final double totalPrice = pricePerItem * _orderRepository.quantity;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -121,6 +130,13 @@ class _OrderScreenState extends State<OrderScreen> {
               itemType: sandwichType,
               breadType: _selectedBreadType,
               orderNote: noteForDisplay,
+            ),
+            const SizedBox(height: 20),
+             
+            const SizedBox(height: 4),
+            Text(
+              'Total: \$${totalPrice.toStringAsFixed(2)}',
+              style: normalText,
             ),
             const SizedBox(height: 20),
             Row(

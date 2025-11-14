@@ -13,11 +13,6 @@ class PricingRepository {
     }
    
 
-
-   
-
-   
-
     return basePrice;
   }
 }
