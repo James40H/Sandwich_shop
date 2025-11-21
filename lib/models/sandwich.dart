@@ -1,4 +1,4 @@
-enum BreadType { white, wheat, wholemeal }
+enum BreadType { White, Wheat, Wholemeal }
 
 enum SandwichType {
   veggieDelight,

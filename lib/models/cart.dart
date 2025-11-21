@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:sandwich_shop/repositories/Pricing_Repository.dart';
 import 'package:sandwich_shop/models/sandwich.dart'; // Ensure Sandwich is imported
 
@@ -8,17 +9,20 @@ class Cart extends ChangeNotifier {
   bool _isFootlong;
   String _bread; // e.g. 'white', 'wheat', 'wholemeal'
   List<Sandwich> _sandwiches; // List to hold added sandwiches
+  int total = 0;
+  
 
   Cart({
     PricingRepository? pricingRepository,
     int initialQuantity = 0,
     bool isFootlong = true,
-    String initialBread = 'white',
+    String initialBread = 'White',
   })  : _pricingRepository = pricingRepository ?? PricingRepository(),
         _quantity = initialQuantity,
         _isFootlong = isFootlong,
         _bread = initialBread,
         _sandwiches = []; // Initialize the list
+        
 
   int get quantity => _quantity;
   bool get isFootlong => _isFootlong;
@@ -61,12 +65,42 @@ class Cart extends ChangeNotifier {
     notifyListeners();
   }
 
-  void add(Sandwich sandwich, {int quantity = 1}) {
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2), // Duration for the SnackBar
+      ),
+    );
+  }
+
+  void add(Sandwich sandwich, {int quantity = 1, BuildContext? context}) {
     _sandwiches.add(sandwich); // Add sandwich to the list
     _quantity += quantity; // Update quantity
+     final String sizeText = (sandwich.isFootlong) ? 'Footlong' : 'Six-inch';
+
+    if (context != null) {
+      // Determine size and bread text from the Sandwich object (falls back to cart fields)
+      //final String sizeText = (sandwich.isFootlong) ? 'Footlong' : 'Six-inch';
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$quantity $bread $sizeText ${sandwich.name} added to cart!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
     notifyListeners();
   }
 
   @override
   String toString() => 'Cart: $_quantity sandwich(es), total $formattedTotal';
+
+  int get countOfItems {
+      total += quantity;
+
+    return total;
+  }
 }

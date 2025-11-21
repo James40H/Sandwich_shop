@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
 import 'package:sandwich_shop/models/cart.dart';
+import 'package:sandwich_shop/repositories/Pricing_Repository.dart';
 
 
 
@@ -38,8 +39,12 @@ class _OrderScreenState extends State<OrderScreen> {
 
   SandwichType _selectedSandwichType = SandwichType.veggieDelight;
   bool _isFootlong = true;
-  BreadType _selectedBreadType = BreadType.white;
+  BreadType _selectedBreadType = BreadType.White;
   int _quantity = 1;
+
+  // new fields to track cart summary shown at bottom
+  int _cartItemCount = 0;
+  double _cartTotal = 0.0;
 
   @override
   void initState() {
@@ -63,16 +68,19 @@ class _OrderScreenState extends State<OrderScreen> {
         breadType: _selectedBreadType,
       );
 
+      // Pass the widget context so Cart.add can show a SnackBar
+      _cart.add(sandwich, quantity: _quantity, context: context);
+
+      // update local cart summary using PricingRepository
+      final double addedPrice = PricingRepository()
+          .calculatePrice(quantity: _quantity, isFootlong: _isFootlong);
+
       setState(() {
-        _cart.add(sandwich, quantity: _quantity);
+        _cartItemCount += _quantity;
+        _cartTotal += addedPrice;
       });
 
-      String sizeText;
-      if (_isFootlong) {
-        sizeText = 'footlong';
-      } else {
-        sizeText = 'six-inch';
-      }
+      String sizeText = _isFootlong ? 'footlong' : 'six-inch';
       String confirmationMessage =
           'Added $_quantity $sizeText ${sandwich.name} sandwich(es) on ${_selectedBreadType.name} bread to cart';
 
@@ -91,7 +99,7 @@ class _OrderScreenState extends State<OrderScreen> {
     List<DropdownMenuEntry<SandwichType>> entries = [];
     for (SandwichType type in SandwichType.values) {
       Sandwich sandwich =
-          Sandwich(type: type, isFootlong: true, breadType: BreadType.white);
+          Sandwich(type: type, isFootlong: true, breadType: BreadType.White);
       DropdownMenuEntry<SandwichType> entry = DropdownMenuEntry<SandwichType>(
         value: type,
         label: sandwich.name,
@@ -249,6 +257,18 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
               const SizedBox(height: 20),
             ],
+          ),
+        ),
+      ),
+      // simple, unobtrusive bottom bar centered with item count and total price
+      bottomNavigationBar: Container(
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        color: Colors.white,
+        child: Center(
+          child: Text(
+            'Items in cart: $_cartItemCount   •   Total: \$${_cartTotal.toStringAsFixed(2)}',
+            style: normalText,
           ),
         ),
       ),

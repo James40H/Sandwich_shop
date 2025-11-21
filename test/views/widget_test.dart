@@ -116,7 +116,7 @@ void main() {
       const widgetToBeTested = OrderItemDisplay(
         quantity: 0,
         itemType: 'footlong',
-        breadType: BreadType.white,
+        breadType: BreadType.White,
         orderNote: 'No notes added.',
       );
       const testApp = MaterialApp(
@@ -132,7 +132,7 @@ void main() {
       const widgetToBeTested = OrderItemDisplay(
         quantity: 3,
         itemType: 'footlong',
-        breadType: BreadType.white,
+        breadType: BreadType.White,
         orderNote: 'No notes added.',
       );
       const testApp = MaterialApp(
@@ -149,7 +149,7 @@ void main() {
       const widgetToBeTested = OrderItemDisplay(
         quantity: 2,
         itemType: 'six-inch',
-        breadType: BreadType.wheat,
+        breadType: BreadType.Wheat,
         orderNote: 'No pickles',
       );
       const testApp = MaterialApp(
@@ -165,7 +165,7 @@ void main() {
       const widgetToBeTested = OrderItemDisplay(
         quantity: 1,
         itemType: 'footlong',
-        breadType: BreadType.wholemeal,
+        breadType: BreadType.Wholemeal,
         orderNote: 'Lots of lettuce',
       );
       const testApp = MaterialApp(
