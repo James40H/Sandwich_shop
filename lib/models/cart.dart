@@ -98,9 +98,4 @@ class Cart extends ChangeNotifier {
   @override
   String toString() => 'Cart: $_quantity sandwich(es), total $formattedTotal';
 
-  int get countOfItems {
-      total += quantity;
-
-    return total;
-  }
 }
