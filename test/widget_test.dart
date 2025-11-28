@@ -65,4 +65,48 @@ void main() {
       ));
     });
   });
+ group('OrderScreen Drawer', () {
+    testWidgets('shows hamburger icon and opens drawer with menu items',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: OrderScreen()));
+
+      // The automatic drawer button has tooltip "Open navigation menu"
+      final Finder menuButton = find.byTooltip('Open navigation menu');
+      expect(menuButton, findsOneWidget);
+
+      // Open drawer
+      await tester.tap(menuButton);
+      await tester.pumpAndSettle();
+
+      // Drawer should contain the expected items
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Cart'), findsOneWidget);
+      expect(find.text('About'), findsOneWidget);
+    });
+
+    testWidgets('tapping Cart in drawer navigates to /cart',
+        (WidgetTester tester) async {
+      final app = MaterialApp(
+        home: OrderScreen(),
+        routes: {
+          '/cart': (context) => const Scaffold(body: Center(child: Text('Cart Page'))),
+          '/about': (context) => const Scaffold(body: Center(child: Text('About Page'))),
+        },
+      );
+
+      await tester.pumpWidget(app);
+
+      // Open drawer
+      await tester.tap(find.byTooltip('Open navigation menu'));
+      await tester.pumpAndSettle();
+
+      // Tap the "Cart" item
+      await tester.tap(find.text('Cart'));
+      await tester.pumpAndSettle();
+
+      // Should have navigated to the Cart Page route
+      expect(find.text('Cart Page'), findsOneWidget);
+    });
+  });
 }
+
