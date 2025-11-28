@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/views/cart_screen.dart';
+import 'package:sandwich_shop/views/log_in_screen.dart';
 import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
 
@@ -82,6 +83,21 @@ class _OrderScreenState extends State<OrderScreen> {
         builder: (BuildContext context) => CartScreen(cart: _cart),
       ),
     );
+  }
+
+  Future<void> _navigateToLoginView() async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute<bool>(
+        builder: (BuildContext context) => const LoginScreen(),
+      ),
+    );
+
+    if (result == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User logged in')),
+      );
+    }
   }
 
   List<DropdownMenuEntry<SandwichType>> _buildSandwichTypeEntries() {
@@ -227,7 +243,7 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
               const SizedBox(height: 20),
               StyledButton(
-                onPressed: _navigateToCartView,
+                onPressed: _navigateToLoginView,
                 icon: Icons.person,
                 label: 'Log In',
                 backgroundColor: Colors.purple,
