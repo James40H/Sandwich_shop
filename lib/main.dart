@@ -39,7 +39,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   SandwichType _selectedSandwichType = SandwichType.veggieDelight;
   bool _isFootlong = true;
-  BreadType _selectedBreadType = BreadType.White;
+  BreadType _selectedBreadType = BreadType.white;
   int _quantity = 1;
 
   // new fields to track cart summary shown at bottom
@@ -99,7 +99,7 @@ class _OrderScreenState extends State<OrderScreen> {
     List<DropdownMenuEntry<SandwichType>> entries = [];
     for (SandwichType type in SandwichType.values) {
       Sandwich sandwich =
-          Sandwich(type: type, isFootlong: true, breadType: BreadType.White);
+          Sandwich(type: type, isFootlong: true, breadType: BreadType.white);
       DropdownMenuEntry<SandwichType> entry = DropdownMenuEntry<SandwichType>(
         value: type,
         label: sandwich.name,
@@ -127,6 +127,7 @@ class _OrderScreenState extends State<OrderScreen> {
       isFootlong: _isFootlong,
       breadType: _selectedBreadType,
     );
+    debugPrint('Image path: ${sandwich.image}');
     return sandwich.image;
   }
 
@@ -316,37 +317,3 @@ class StyledButton extends StatelessWidget {
   }
 }
 
-class OrderItemDisplay extends StatelessWidget {
-  final int quantity;
-  final String itemType;
-  final BreadType breadType;
-  final String orderNote;
-
-  const OrderItemDisplay({
-    super.key,
-    required this.quantity,
-    required this.itemType,
-    required this.breadType,
-    required this.orderNote,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    String displayText =
-        '$quantity ${breadType.name} $itemType sandwich(es): ${'🥪' * quantity}';
-
-    return Column(
-      children: [
-        Text(
-          displayText,
-          style: normalText,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Note: $orderNote',
-          style: normalText,
-        ),
-      ],
-    );
-  }
-}
