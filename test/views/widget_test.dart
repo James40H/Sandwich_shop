@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sandwich_shop/main.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
+import 'package:sandwich_shop/models/cart.dart';
 
 void main() {
   group('App', () {
@@ -110,71 +111,46 @@ void main() {
     });
   });
 
-  group('OrderItemDisplay', () {
-    testWidgets('shows correct text and note for zero sandwiches',
+  group('Cart SnackBar tests', () {
+    testWidgets('shows SnackBar when "add to cart" (simulated) is pressed',
         (WidgetTester tester) async {
-      const widgetToBeTested = OrderItemDisplay(
-        quantity: 0,
-        itemType: 'footlong',
-        breadType: BreadType.White,
-        orderNote: 'No notes added.',
-      );
-      const testApp = MaterialApp(
-        home: Scaffold(body: widgetToBeTested),
-      );
-      await tester.pumpWidget(testApp);
-      expect(find.text('0 white footlong sandwich(es): '), findsOneWidget);
-      expect(find.text('Note: No notes added.'), findsOneWidget);
+      final cart = Cart();
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: Builder(builder: (BuildContext context) {
+            return Center(
+              child: ElevatedButton(
+                onPressed: () => cart.showSnackBar(context, 'Item added to cart'),
+                child: const Text('Add to cart'),
+              ),
+            );
+          }),
+        ),
+      ));
+
+      await tester.tap(find.text('Add to cart'));
+      await tester.pump(); // start SnackBar animation
+
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text('Item added to cart'), findsOneWidget);
     });
 
-    testWidgets('shows correct text and emoji for three sandwiches',
-        (WidgetTester tester) async {
-      const widgetToBeTested = OrderItemDisplay(
-        quantity: 3,
-        itemType: 'footlong',
-        breadType: BreadType.White,
-        orderNote: 'No notes added.',
-      );
-      const testApp = MaterialApp(
-        home: Scaffold(body: widgetToBeTested),
-      );
-      await tester.pumpWidget(testApp);
-      expect(
-          find.text('3 white footlong sandwich(es): 🥪🥪🥪'), findsOneWidget);
-      expect(find.text('Note: No notes added.'), findsOneWidget);
-    });
 
-    testWidgets('shows correct bread and type for two six-inch wheat',
-        (WidgetTester tester) async {
-      const widgetToBeTested = OrderItemDisplay(
-        quantity: 2,
-        itemType: 'six-inch',
-        breadType: BreadType.Wheat,
-        orderNote: 'No pickles',
-      );
-      const testApp = MaterialApp(
-        home: Scaffold(body: widgetToBeTested),
-      );
-      await tester.pumpWidget(testApp);
-      expect(find.text('2 wheat six-inch sandwich(es): 🥪🥪'), findsOneWidget);
-      expect(find.text('Note: No pickles'), findsOneWidget);
-    });
 
-    testWidgets('shows correct bread and type for one wholemeal footlong',
+  group('Cart bottom bar', () {
+    testWidgets('cart summary at bottom updates when Add to cart is pressed',
         (WidgetTester tester) async {
-      const widgetToBeTested = OrderItemDisplay(
-        quantity: 1,
-        itemType: 'footlong',
-        breadType: BreadType.wholemeal,
-        orderNote: 'Lots of lettuce',
-      );
-      const testApp = MaterialApp(
-        home: Scaffold(body: widgetToBeTested),
-      );
-      await tester.pumpWidget(testApp);
-      expect(
-          find.text('1 wholemeal footlong sandwich(es): 🥪'), findsOneWidget);
-      expect(find.text('Note: Lots of lettuce'), findsOneWidget);
+      await tester.pumpWidget(const App());
+
+      // initial summary shown at bottom
+      expect(find.text('Items in cart: 0 •  Total: £0.00'), findsOneWidget);
+
+      // tap Add and verify bottom summary updates
+      await tester.tap(find.widgetWithText(StyledButton, 'Add to Cart'));
+      await tester.pumpAndSettle();
+      expect(find.text('Items in cart: 1 • Total: £11.00'), findsOneWidget);
     });
   });
+});  
 }
