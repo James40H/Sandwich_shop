@@ -16,7 +16,7 @@ class Cart extends ChangeNotifier {
     PricingRepository? pricingRepository,
     int initialQuantity = 0,
     bool isFootlong = true,
-    String initialBread = 'White',
+    String initialBread = 'white',
   })  : _pricingRepository = pricingRepository ?? PricingRepository(),
         _quantity = initialQuantity,
         _isFootlong = isFootlong,
@@ -86,7 +86,7 @@ class Cart extends ChangeNotifier {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$quantity $bread $sizeText ${sandwich.name} added to cart!'),
+          content: Text('$quantity ${_bread} $sizeText ${sandwich.name} added to cart!'),
           duration: Duration(seconds: 2),
         ),
       );
