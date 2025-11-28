@@ -72,6 +72,19 @@ Allow users to edit details of a sandwich in their cart (e.g., change bread type
 
 ---
 
+### 4. Log in page and button
+
+**Description:**  
+Allow users to in put their username and password to sign in
+
+**Requirements:**  
+- Home page has a log in button.
+- Tapping the log in button take the user to a log in page.
+- User should be able to type in the boxes provided.
+- Have a snack bar at the bottom that says that the user has logged in.
+
+---
+
 ### General UI and Behavior Requirements
 
 - All changes should be reflected immediately in the UI.

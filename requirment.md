@@ -53,6 +53,15 @@ The Cart Modification feature enables users of the Sandwich Shop Flutter app to 
 
 ---
 
+### 4. Log in page and button
+
+- [ ] Home page has a log in button.
+- [ ] Tapping the log in button take the user to a log in page.
+- [ ] User should be able to type in the boxes provided.
+- [ ] Have a snack bar at the bottom that says that the user has logged in.
+
+---
+
 ## 4. Subtasks
 
 1. Implement "+" and "–" quantity adjustment buttons for each cart item.
