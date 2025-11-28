@@ -62,6 +62,15 @@ The Cart Modification feature enables users of the Sandwich Shop Flutter app to 
 
 ---
 
+### 5. Drawer
+- [ ] The OrderScreen shows the automatic AppBar hamburger icon when a Drawer is present.
+- [ ] Tapping the hamburger opens the drawer.
+- [ ] Drawer shows header and the required menu items.
+- [ ] Tapping a menu item closes the drawer and navigates to the correct route.
+- [ ] The AppBar logo does not overlap or replace the hamburger area.
+- [ ] Drawer items are keyboard-focusable and readable by accessibility services.
+- [ ] Widget tests validate open/close behavior and navigation from drawer items.
+
 ## 4. Subtasks
 
 1. Implement "+" and "–" quantity adjustment buttons for each cart item.
