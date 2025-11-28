@@ -226,6 +226,13 @@ class _OrderScreenState extends State<OrderScreen> {
                 backgroundColor: Colors.blue,
               ),
               const SizedBox(height: 20),
+              StyledButton(
+                onPressed: _navigateToCartView,
+                icon: Icons.person,
+                label: 'Log In',
+                backgroundColor: Colors.purple,
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Cart: ${_cart.countOfItems} items - £${_cart.totalPrice.toStringAsFixed(2)}',
                 style: normalText,
