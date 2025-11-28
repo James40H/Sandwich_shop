@@ -138,17 +138,61 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            height: 100,
-            child: Image.asset('assets/images/logo.png'),
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const UserAccountsDrawerHeader(
+                accountName: Text('Jane Doe'),
+                accountEmail: Text('jane@example.com'),
+                currentAccountPicture: CircleAvatar(child: Icon(Icons.person)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: const Text('Home'),
+                onTap: () {
+                  Navigator.pop(context); // close drawer
+                  Navigator.pushReplacementNamed(context, '/'); // or navigate
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.shopping_cart),
+                title: const Text('Cart'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/cart');
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.info),
+                title: const Text('About'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/about');
+                },
+              ),
+            ],
           ),
         ),
-        title: const Text(
-          'Sandwich Counter',
-          style: heading1,
+      ),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const Text(
+              'Sandwich Counter',
+              style: heading1,
+            ),
+          ],
         ),
       ),
       body: Center(
