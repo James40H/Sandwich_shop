@@ -1,101 +1,66 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:sandwich_shop/repositories/Pricing_Repository.dart';
-import 'package:sandwich_shop/models/sandwich.dart'; // Ensure Sandwich is imported
+import 'sandwich.dart';
+import 'package:sandwich_shop/repositories/pricing_repository.dart';
 
-class Cart extends ChangeNotifier {
-  final PricingRepository _pricingRepository;
-  int _quantity;
-  bool _isFootlong;
-  String _bread; // e.g. 'white', 'wheat', 'wholemeal'
-  List<Sandwich> _sandwiches; // List to hold added sandwiches
-  int total = 0;
-  
+class Cart {
+  final Map<Sandwich, int> _items = {};
 
-  Cart({
-    PricingRepository? pricingRepository,
-    int initialQuantity = 0,
-    bool isFootlong = true,
-    String initialBread = 'White',
-  })  : _pricingRepository = pricingRepository ?? PricingRepository(),
-        _quantity = initialQuantity,
-        _isFootlong = isFootlong,
-        _bread = initialBread,
-        _sandwiches = []; // Initialize the list
-        
+  // Returns a read-only copy of the items and their quantities
+  Map<Sandwich, int> get items => Map.unmodifiable(_items);
 
-  int get quantity => _quantity;
-  bool get isFootlong => _isFootlong;
-  String get bread => _bread;
-
-  double get totalPrice =>
-      _pricingRepository.calculatePrice(quantity: _quantity, isFootlong: _isFootlong);
-
-  String get formattedTotal => '£${totalPrice.toStringAsFixed(2)}';
-
-  String get summary =>
-      '$_quantity ${_bread} ${_isFootlong ? 'footlong' : 'six-inch'} sandwich(es): $formattedTotal';
-
-  void increment([int amount = 1]) {
-    _quantity += amount;
-    notifyListeners();
+  void add(Sandwich sandwich, {int quantity = 1}) {
+    if (_items.containsKey(sandwich)) {
+      _items[sandwich] = _items[sandwich]! + quantity;
+    } else {
+      _items[sandwich] = quantity;
+    }
   }
 
-  void decrement([int amount = 1]) {
-    if (_quantity - amount < 0) return;
-    _quantity -= amount;
-    notifyListeners();
-  }
-
-  void setSandwichType(bool value) {
-    if (_isFootlong == value) return;
-    _isFootlong = value;
-    notifyListeners();
-  }
-
-  void setBread(String breadType) {
-    if (_bread == breadType) return;
-    _bread = breadType;
-    notifyListeners();
+  void remove(Sandwich sandwich, {int quantity = 1}) {
+    if (_items.containsKey(sandwich)) {
+      final currentQty = _items[sandwich]!;
+      if (currentQty > quantity) {
+        _items[sandwich] = currentQty - quantity;
+      } else {
+        _items.remove(sandwich);
+      }
+    }
   }
 
   void clear() {
-    _quantity = 0;
-    _sandwiches.clear(); // Clear the sandwiches list
-    notifyListeners();
+    _items.clear();
   }
 
-  void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 2), // Duration for the SnackBar
-      ),
-    );
-  }
+  double get totalPrice {
+    final pricingRepository = PricingRepository();
+    double total = 0.0;
 
-  void add(Sandwich sandwich, {int quantity = 1, BuildContext? context}) {
-    _sandwiches.add(sandwich); // Add sandwich to the list
-    _quantity += quantity; // Update quantity
-     final String sizeText = (sandwich.isFootlong) ? 'Footlong' : 'Six-inch';
-
-    if (context != null) {
-      // Determine size and bread text from the Sandwich object (falls back to cart fields)
-      //final String sizeText = (sandwich.isFootlong) ? 'Footlong' : 'Six-inch';
-
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$quantity $bread $sizeText ${sandwich.name} added to cart!'),
-          duration: Duration(seconds: 2),
-        ),
+    for (Sandwich sandwich in _items.keys) {
+      int quantity = _items[sandwich]!;
+      total += pricingRepository.calculatePrice(
+        quantity: quantity,
+        isFootlong: sandwich.isFootlong,
       );
     }
 
-    notifyListeners();
+    return total;
   }
 
-  @override
-  String toString() => 'Cart: $_quantity sandwich(es), total $formattedTotal';
+  bool get isEmpty => _items.isEmpty;
 
+  int get length => _items.length;
+
+  int get countOfItems {
+    int total = 0;
+    for (Sandwich sandwich in _items.keys) {
+      total += _items[sandwich]!;
+    }
+    return total;
+  }
+
+  int getQuantity(Sandwich sandwich) {
+    if (_items.containsKey(sandwich)) {
+      return _items[sandwich]!;
+    }
+    return 0;
+  }
 }

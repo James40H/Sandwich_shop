@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sandwich_shop/repositories/Pricing_Repository.dart';
-
+import 'package:sandwich_shop/repositories/pricing_repository.dart';
 
 void main() {
   group('PricingRepository', () {
