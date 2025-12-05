@@ -317,6 +317,5 @@ void main() {
           tester.widget<ElevatedButton>(elevatedButtonFinder);
       expect(button.enabled, isFalse);
     });
-  }
-  );
+  });
 }

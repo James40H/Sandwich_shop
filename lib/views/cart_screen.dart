@@ -19,43 +19,43 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   Future<void> _navigateToCheckout() async {
-  if (widget.cart.items.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Your cart is empty'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-    return;
-  }
+    if (widget.cart.items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Your cart is empty'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
 
-  final result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => CheckoutScreen(cart: widget.cart),
-    ),
-  );
-
-  if (result != null && mounted) {
-    setState(() {
-      widget.cart.clear();
-    });
-
-    final String orderId = result['orderId'] as String;
-    final String estimatedTime = result['estimatedTime'] as String;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content:
-            Text('Order $orderId confirmed! Estimated time: $estimatedTime'),
-        duration: const Duration(seconds: 4),
-        backgroundColor: Colors.green,
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutScreen(cart: widget.cart),
       ),
     );
 
-    Navigator.pop(context);
+    if (result != null && mounted) {
+      setState(() {
+        widget.cart.clear();
+      });
+
+      final String orderId = result['orderId'] as String;
+      final String estimatedTime = result['estimatedTime'] as String;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Order $orderId confirmed! Estimated time: $estimatedTime'),
+          duration: const Duration(seconds: 4),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pop(context);
+    }
   }
-}
 
   String _getSizeText(bool isFootlong) {
     if (isFootlong) {
@@ -179,8 +179,6 @@ class _CartScreenState extends State<CartScreen> {
                 style: heading2,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
-              const SizedBox(height: 20),
               const SizedBox(height: 20),
               Builder(
                 builder: (BuildContext context) {

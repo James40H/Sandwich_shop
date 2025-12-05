@@ -1,87 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _isSubmitting = false;
+class _ProfileScreenState extends State<ProfileScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
+    _nameController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
-  void _submit() {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text;
-    if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter username and password')),
-      );
-      return;
+  void _saveProfile() {
+    final String name = _nameController.text.trim();
+    final String location = _locationController.text.trim();
+
+    final bool nameIsNotEmpty = name.isNotEmpty;
+    final bool locationIsNotEmpty = location.isNotEmpty;
+    final bool bothFieldsFilled = nameIsNotEmpty && locationIsNotEmpty;
+
+    if (bothFieldsFilled) {
+      _returnProfileData(name, location);
+    } else {
+      _showValidationError();
     }
+  }
 
-    setState(() => _isSubmitting = true);
+  void _returnProfileData(String name, String location) {
+    final Map<String, String> profileData = {
+      'name': name,
+      'location': location,
+    };
+    Navigator.pop(context, profileData);
+  }
 
-    // Simulate quick validation / auth - replace with real auth as needed.
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      // Return success to caller (OrderScreen)
-      Navigator.pop<bool>(context, true);
-    });
+  void _showValidationError() {
+    const SnackBar validationSnackBar = SnackBar(
+      content: Text('Please fill in all fields'),
+      duration: Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(validationSnackBar);
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool canSubmit = !_isSubmitting &&
-        _usernameController.text.trim().isNotEmpty &&
-        _passwordController.text.isNotEmpty;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Log In', style: heading1)),
+      appBar: AppBar(
+        title: const Text('Profile', style: heading1),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Text('Enter your details:', style: heading2),
+            const SizedBox(height: 20),
             TextField(
-              controller: _usernameController,
+              controller: _nameController,
               decoration: const InputDecoration(
-                labelText: 'Username',
-                prefixIcon: Icon(Icons.person),
+                labelText: 'Your Name',
+                border: OutlineInputBorder(),
               ),
-              textInputAction: TextInputAction.next,
-              onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             TextField(
-              controller: _passwordController,
+              controller: _locationController,
               decoration: const InputDecoration(
-                labelText: 'Password',
-                prefixIcon: Icon(Icons.lock),
+                labelText: 'Preferred Location',
+                border: OutlineInputBorder(),
               ),
-              obscureText: true,
-              onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: canSubmit ? _submit : null,
-              child: _isSubmitting
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Log In'),
+              onPressed: _saveProfile,
+              child: const Text('Save Profile'),
             ),
           ],
         ),

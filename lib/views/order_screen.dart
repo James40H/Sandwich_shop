@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/views/cart_screen.dart';
-import 'package:sandwich_shop/views/log_in_screen.dart';
 import 'package:sandwich_shop/models/cart.dart';
 import 'package:sandwich_shop/models/sandwich.dart';
+import 'package:sandwich_shop/views/log_in_screen.dart';
 
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
@@ -37,6 +37,36 @@ class _OrderScreenState extends State<OrderScreen> {
   void dispose() {
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _navigateToProfile() async {
+    final Map<String, String>? result =
+        await Navigator.push<Map<String, String>>(
+      context,
+      MaterialPageRoute<Map<String, String>>(
+        builder: (BuildContext context) => const ProfileScreen(),
+      ),
+    );
+
+    final bool hasResult = result != null;
+    final bool widgetStillMounted = mounted;
+
+    if (hasResult && widgetStillMounted) {
+      _showWelcomeMessage(result);
+    }
+  }
+
+  void _showWelcomeMessage(Map<String, String> profileData) {
+    final String name = profileData['name']!;
+    final String location = profileData['location']!;
+    final String welcomeMessage = 'Welcome, $name! Ordering from $location';
+
+    final SnackBar welcomeSnackBar = SnackBar(
+      content: Text(welcomeMessage),
+      duration: const Duration(seconds: 3),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(welcomeSnackBar);
   }
 
   void _addToCart() {
@@ -85,21 +115,6 @@ class _OrderScreenState extends State<OrderScreen> {
     );
   }
 
-  Future<void> _navigateToLoginView() async {
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute<bool>(
-        builder: (BuildContext context) => const LoginScreen(),
-      ),
-    );
-
-    if (result == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User logged in')),
-      );
-    }
-  }
-
   List<DropdownMenuEntry<SandwichType>> _buildSandwichTypeEntries() {
     List<DropdownMenuEntry<SandwichType>> entries = [];
     for (SandwichType type in SandwichType.values) {
@@ -138,61 +153,17 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            children: [
-              const UserAccountsDrawerHeader(
-                accountName: Text('Jane Doe'),
-                accountEmail: Text('jane@example.com'),
-                currentAccountPicture: CircleAvatar(child: Icon(Icons.person)),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('Home'),
-                onTap: () {
-                  Navigator.pop(context); // close drawer
-                  Navigator.pushReplacementNamed(context, '/'); // or navigate
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.shopping_cart),
-                title: const Text('Cart'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/cart');
-                },
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('About'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/about');
-                },
-              ),
-            ],
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            height: 100,
+            child: Image.asset('assets/images/logo.png'),
           ),
         ),
-      ),
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 4.0),
-              child: Image.asset(
-                'assets/images/logo.png',
-                width: 100,
-                height: 100,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const Text(
-              'Sandwich Counter',
-              style: heading1,
-            ),
-          ],
+        title: const Text(
+          'Sandwich Counter',
+          style: heading1,
         ),
       ),
       body: Center(
@@ -287,9 +258,9 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
               const SizedBox(height: 20),
               StyledButton(
-                onPressed: _navigateToLoginView,
+                onPressed: _navigateToProfile,
                 icon: Icons.person,
-                label: 'Log In',
+                label: 'Profile',
                 backgroundColor: Colors.purple,
               ),
               const SizedBox(height: 20),
